@@ -38,12 +38,14 @@ def main():
     if args.version not in data['versions']:
         print(f"Version '{args.version}' not found after running new.js.")
         sys.exit(1)
-
-    # Step 2: Fix the new entry - remove hooks and add sources template
+    # Step 2: Fix the new entry - remove hooks, remove JsonWizardPaths, and add sources template
     version_data = data['versions'][args.version]
     if 'hooks' in version_data['metadata']:
         del version_data['metadata']['hooks']
         print("Removed 'hooks' from metadata.")
+    if 'JsonWizardPaths' in version_data['metadata']:
+        del version_data['metadata']['JsonWizardPaths']
+        print("Removed 'JsonWizardPaths' from metadata.")
 
     sources_template = [
         {
@@ -138,7 +140,7 @@ def main():
         if source['url'].endswith('assetId='):  # Should be true now
             platform = source['platform']['name']
             arch = source['platform']['architecture']
-            
+
             pattern = None
             if platform == 'Windows':
                 if arch == 'x86_64':
@@ -152,7 +154,7 @@ def main():
                     pattern = 'linux-arm64-'
             elif platform == 'macOS':
                 pattern = 'macos-universal-'
-            
+
             if pattern:
                 asset_id = find_asset_id(pattern)
                 if asset_id:
